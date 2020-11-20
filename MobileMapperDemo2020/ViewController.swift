@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate
+class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate
 {
 
     @IBOutlet weak var mapView: MKMapView!
@@ -29,6 +29,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
+        
+        mapView.delegate = self
         
     }
     
@@ -79,9 +81,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate
         
         currentLocation = locations[0]
     }
+    
+    // MARK: MapViewDelegate Methods
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?
+    {
+        // keep the blue dot for userLocation
+        if annotation.isEqual(mapView.userLocation)
+        {
+            return nil
+        }
+        
+        let pin = MKAnnotationView(annotation: annotation, reuseIdentifier: nil)
+        pin.image = UIImage(named: "Image")
+        pin.canShowCallout = true
+        let button = UIButton(type: .detailDisclosure)
+        pin.rightCalloutAccessoryView = button
+        return pin
+    }
+    
+
 
     
     
 
 }
+
+
 
