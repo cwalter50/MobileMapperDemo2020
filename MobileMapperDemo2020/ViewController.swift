@@ -19,6 +19,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     
     var parks = [MKMapItem]()
     
+    var isInitalMapLoaded = true
+    var initialRegion = MKCoordinateRegion()
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -96,11 +99,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         pin.canShowCallout = true
         let button = UIButton(type: .detailDisclosure)
         pin.rightCalloutAccessoryView = button
+        
+        let zoomButton = UIButton(type: .contactAdd)
+        pin.leftCalloutAccessoryView = zoomButton
         return pin
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl)
     {
+        // setup zoomout button
+        let buttonPressed = control as! UIButton
+        if buttonPressed.buttonType == .contactAdd
+        {
+            mapView.setRegion(initialRegion, animated: true)
+            return
+        }
+        
         var currentMapItem = MKMapItem()
         if let coordinate = view.annotation?.coordinate {
             for mapItem in parks
@@ -122,6 +136,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
             let alert = UIAlertController(title: parkName, message: streetAddress, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        if isInitalMapLoaded
+        {
+            initialRegion = MKCoordinateRegion(center: mapView.centerCoordinate, span: mapView.region.span)
+            isInitalMapLoaded = false
         }
     }
     
