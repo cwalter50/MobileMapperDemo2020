@@ -99,6 +99,32 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         return pin
     }
     
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl)
+    {
+        var currentMapItem = MKMapItem()
+        if let coordinate = view.annotation?.coordinate {
+            for mapItem in parks
+            {
+                if mapItem.placemark.coordinate.latitude == coordinate.latitude && mapItem.placemark.coordinate.longitude == coordinate.longitude
+                {
+                    currentMapItem = mapItem
+                }
+            }
+        }
+        
+        
+        let placemark = currentMapItem.placemark
+        print(currentMapItem)
+        
+        if let parkName = placemark.name, let streetNumber = placemark.subThoroughfare, let streetName = placemark.thoroughfare
+        {
+            let streetAddress = streetNumber + " " + streetName
+            let alert = UIAlertController(title: parkName, message: streetAddress, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
+    }
+    
 
 
     
